@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+    body {
+      width: 400px;
+      border: 1px solid #eee;
+    }
+
+    .infoWrap {
+      overflow: hidden;
+    }
+
+    .myInfo {
+      background-color: #ccc;
+      float: right;
+    }
+
+    .oppositeInfo {
+      background-color: #fff;
+      float: left;
+    }
+  </style>
+</head>
+<body>
+    <input id='message' type="text">
+    <button id='submit'>发送</button>
+</body>
+<script>
+  const msgInput = document.getElementById('message')
+  const submit = document.getElementById('submit')
+  const tamp = (new Date().getTime() + '').slice(-6)
+  const ws = new WebSocket('ws://192.168.0.104:9999/id/' + tamp)
+  let other
+
+  ws.onopen = function(e) {
+    console.log(e)
+  }
+
+  ws.onmessage = function(data) {
+    const message = JSON.parse(data.data)
+    const { msg, from } = message
+    switch (from) {
+      case 'server':
+        const enterUser = msg.slice(0, 6)
+        if (enterUser !== tamp) {
+          other = enterUser
+          try {
+            ws.send(JSON.stringify({
+              type: 'sendMsg',
+              toUser: enterUser,
+              msg: `hello，${enterUser}`
+            }))
+            const p = myInfo(`hello，${enterUser}`)
+            document.body.insertBefore(p, msgInput)
+          } catch (e) {
+
+          }
+        }
+        break
+        case 'user':
+          const p = oppositeInfo(msg)
+          document.body.insertBefore(p, msgInput)
+      default:
+        break
+    }
+    
+  }
+
+  submit.onclick = function() {
+    try {
+      const sendInfo = msgInput.value
+      ws.send(JSON.stringify({
+        type: 'sendMsg',
+        toUser: other,
+        msg: sendInfo
+      }))
+      console.log(other)
+      const p = myInfo(sendInfo)
+      document.body.insertBefore(p, msgInput)
+      msgInput.value = ''
+    } catch (e) {
+
+    }
+  }
+
+  msgInput.onkeydown = function(e) {
+    if (e.code === 'Enter') {
+      submit.click()
+    }
+  }
+
+  function myInfo(info) {
+    const div = document.createElement('div')
+    const p = document.createElement('p')
+    div.className = 'infoWrap'
+    p.className = 'myInfo'
+    p.innerText = info
+    div.append(p)
+    console.log(div)
+    return div
+  }
+
+  function oppositeInfo(info) {
+    const div = document.createElement('div')
+    const p = document.createElement('p')
+    div.className = 'infoWrap'
+    p.className = 'oppositeInfo'
+    p.innerText = info
+    div.append(p)
+    console.log(div)
+    return div
+  }
+  
+</script>
+</html>
