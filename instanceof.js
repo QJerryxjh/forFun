@@ -44,3 +44,7 @@ console.log(
   c.myInstanceof(Object)
 
 )
+
+const ex = {}
+
+console.log(ex.myInstanceof(Object), c.myInstanceof(Child))
