@@ -42,6 +42,7 @@ class MyPromise {
     this.onRejectedCallbacks = []
 
     const resolve = value => {
+      console.log(this)
       if (this.state === PENDING) {
         this.state = FULFILLED
         this.value = value
@@ -69,7 +70,7 @@ class MyPromise {
   }
 
   then(onFulfilled, onRejected) {
-    // 处理传递给then的参数，如果不是函数，成功就返回值本身，失败就以值为error抛出
+    // 处理传递给then的参数，如果不是函数，成功就返回值本身，失败就以值为error抛出， 有助于穿透效果
     onFulfilled = typeof onFulfilled === 'function' ? onFulfilled : y => y
     onRejected = typeof onRejected === 'function' ? onRejected : error => { throw error }
 
@@ -138,7 +139,7 @@ class MyPromise {
     }
     
     if (x !== null && (typeof x === 'object' || typeof x === 'function')) {
-      // 防止resolve过的就不再reject了，创造一个标志
+      // resolve过的就不再reject了，创造一个标志
       let called
       try {
         let then = x.then
@@ -223,23 +224,23 @@ const newPro1 = new MyPromise((resolve, reject) => {
   setTimeout(() => {
     resolve(1)
   }, 1000)
-})
+}).then(res => {console.log(res)})
 
-const newPro2 = new MyPromise((resolve, reject) => {
-  setTimeout(() => {
-    reject(3)
-  }, 3000)
-})
-
-
-const newPro3 = new MyPromise((resolve, reject) => {
-  setTimeout(() => {
-    resolve(3)
-  }, 5000)
-})
+// const newPro2 = new MyPromise((resolve, reject) => {
+//   setTimeout(() => {
+//     reject(3)
+//   }, 3000)
+// })
 
 
-MyPromise.race([newPro1, newPro2, newPro3]).then(res => console.log(res), err => console.log(err))
+// const newPro3 = new MyPromise((resolve, reject) => {
+//   setTimeout(() => {
+//     resolve(3)
+//   }, 5000)
+// })
+
+
+// MyPromise.race([newPro1, newPro2, newPro3]).then(res => console.log(res), err => console.log(err))
 
 // newPro.then((res) => {
 //   console.log(res)

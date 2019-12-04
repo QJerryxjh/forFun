@@ -30,7 +30,16 @@
     <input id='message' type="text">
     <button id='submit'>发送</button>
 </body>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script>
+  axios.post('http://106.14.3.24:9090/api/login', {
+    "phone_no": "15951981849",    //登录手机号
+    "password": "85dcf91c51b058b4fda7e73b37f4fd85"    //hash_hmac('md5',md5(password),$phone_no);
+  }).then(res => {
+    console.log(res)
+  })
+</script>
+<!-- <script>
   const msgInput = document.getElementById('message')
   const submit = document.getElementById('submit')
   const tamp = (new Date().getTime() + '').slice(-6)
@@ -116,5 +125,5 @@
     return div
   }
   
-</script>
+</script> -->
 </html>
